@@ -30,7 +30,10 @@ fn spawn_spaceship(mut commands: Commands) {
     commands.spawn((Position { x: 0.0, y: 0.0 }, Velocity { x: 1.0, y: 1.0 }));
 }
 
-fn update_positions(mut query: Query<(&Velocity, &mut Position)>) {
+fn update_positions(mut query: Query<(&Velocity, &mut Position)>, game_state: Res<GameState>) {
+    if !game_state.is_playing {
+        return;
+    }
     for (velocity, mut position) in query.iter_mut() {
         position.x += velocity.x;
         position.y += velocity.y;
