@@ -1,8 +1,10 @@
+mod asteriods;
 mod camera;
 mod debug;
 mod movement;
 mod spaceship;
 
+use asteriods::AsteroidPlugin;
 use bevy::prelude::*;
 use camera::CameraPlugin;
 use debug::DebugPlugin;
@@ -16,10 +18,12 @@ fn main() {
             color: Color::default(),
             brightness: 0.75,
         })
-        .add_plugins(SpaceshipPlugin)
-        .add_plugins(MovementPlugin)
-        .add_plugins(CameraPlugin)
         .add_plugins(DebugPlugin)
         .add_plugins(DefaultPlugins)
+        // app plugins
+        .add_plugins(SpaceshipPlugin)
+        .add_plugins(AsteroidPlugin)
+        .add_plugins(MovementPlugin)
+        .add_plugins(CameraPlugin)
         .run()
 }
