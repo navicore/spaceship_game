@@ -6,6 +6,7 @@ use rand::prelude::*;
 use crate::asset_loader::SceneAssets;
 use crate::collision_detection::Collider;
 use crate::movement::{Acceleration, MovingObjectBundle, Velocity};
+use crate::schedule::InGameSet;
 
 const SPAWN_RANGE_X: Range<f32> = -25.0..25.0;
 const SPAWN_RANGE_Z: Range<f32> = -0.0..25.0;
@@ -31,7 +32,8 @@ impl Plugin for AsteroidPlugin {
         })
         .add_systems(
             Update,
-            (spawn_asteroid, rotate_asteroids, handle_asteroid_collisions),
+            //(spawn_asteroid, rotate_asteroids, handle_asteroid_collisions),
+            (spawn_asteroid, rotate_asteroids).in_set(InGameSet::EntityUpdates),
         );
     }
 }
@@ -78,21 +80,5 @@ fn spawn_asteroid(
 fn rotate_asteroids(mut query: Query<&mut Transform, With<Asteroid>>, time: Res<Time>) {
     for mut transform in query.iter_mut() {
         transform.rotate_local_z(ROTATE_SPEED * time.delta_seconds());
-    }
-}
-
-fn handle_asteroid_collisions(
-    mut commands: Commands,
-    query: Query<(Entity, &Collider), With<Asteroid>>,
-) {
-    for (entity, collider) in query.iter() {
-        for &collided_entity in collider.colliding_entities.iter() {
-            if query.get(collided_entity).is_ok() {
-                // don't collide with yourself or other asteroids
-                continue;
-            }
-            // despawn the asteroid
-            commands.entity(entity).despawn_recursive();
-        }
     }
 }
