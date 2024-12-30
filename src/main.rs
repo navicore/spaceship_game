@@ -7,6 +7,7 @@ mod despawn;
 mod movement;
 mod schedule;
 mod spaceship;
+mod state;
 
 use asset_loader::AssetLoaderPlugin;
 use asteriods::AsteroidPlugin;
@@ -18,6 +19,7 @@ use despawn::DespawnPlugin;
 use movement::MovementPlugin;
 use schedule::SchedulePlugin;
 use spaceship::SpaceshipPlugin;
+use state::StatePlugin;
 
 fn main() {
     App::new()
@@ -37,5 +39,6 @@ fn main() {
         .add_plugins(CollisionDetectionPlugin)
         .add_plugins(DespawnPlugin)
         .add_plugins(SchedulePlugin)
+        .add_plugins(StatePlugin)
         .run()
 }
