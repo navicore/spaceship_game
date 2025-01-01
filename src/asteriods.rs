@@ -4,7 +4,8 @@ use bevy::prelude::*;
 use rand::prelude::*;
 
 use crate::asset_loader::SceneAssets;
-use crate::collision_detection::Collider;
+use crate::collision_detection::{Collider, CollisionDamage};
+use crate::health::Health;
 use crate::movement::{Acceleration, MovingObjectBundle, Velocity};
 use crate::schedule::InGameSet;
 
@@ -15,6 +16,8 @@ const ACCERATION_SCALAR: f32 = 1.0;
 const SPAWN_TIME_SECONDS: f32 = 1.0;
 const ROTATE_SPEED: f32 = 2.5;
 const RADIUS: f32 = 2.5;
+const HEALTH: f32 = 80.0;
+const COLLISION_DAMAGE: f32 = 35.0;
 
 #[derive(Component, Debug)]
 pub struct Asteroid;
@@ -74,6 +77,8 @@ fn spawn_asteroid(
             },
         },
         Asteroid,
+        Health::new(HEALTH),
+        CollisionDamage::new(COLLISION_DAMAGE),
     ));
 }
 

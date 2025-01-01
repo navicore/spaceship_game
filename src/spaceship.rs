@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 
 use crate::asset_loader::SceneAssets;
-use crate::collision_detection::Collider;
+use crate::collision_detection::{Collider, CollisionDamage};
+use crate::health::Health;
 use crate::movement::{Acceleration, MovingObjectBundle, Velocity};
 use crate::schedule::InGameSet;
 
@@ -12,7 +13,11 @@ const SPACESHIP_ROLL_SPEED: f32 = 2.5;
 const MISSILE_SPEED: f32 = 50.0;
 const MISSILE_FORWARD_SPAWN_SCALAR: f32 = 7.5;
 const SPACESHIP_RADIUS: f32 = 2.5;
+const SPACESHIP_HEALTH: f32 = 100.0;
+const SPACESHIP_COLLISION_DAMAGE: f32 = 100.0;
 const MISSILE_RADIUS: f32 = 2.5;
+const MISSILE_HEALTH: f32 = 1.0;
+const MISSILE_COLLISION_DAMAGE: f32 = 5.0;
 
 #[derive(Component, Debug)]
 pub struct Spaceship;
@@ -53,6 +58,8 @@ fn spawn_spaceship(mut commands: Commands, scene_assets: Res<SceneAssets>) {
             },
         },
         Spaceship,
+        Health::new(SPACESHIP_HEALTH),
+        CollisionDamage::new(SPACESHIP_COLLISION_DAMAGE),
     ));
 }
 
@@ -117,6 +124,8 @@ fn spaceship_weapon_controls(
                 },
             },
             SpaceshipMissile,
+            Health::new(MISSILE_HEALTH),
+            CollisionDamage::new(MISSILE_COLLISION_DAMAGE),
         ));
     }
 }
