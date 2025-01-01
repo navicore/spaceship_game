@@ -24,9 +24,9 @@ use state::StatePlugin;
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::rgb(0.1, 0.0, 0.15)))
+        .insert_resource(ClearColor(Color::srgb(0.1, 0.0, 0.15)))
         .insert_resource(AmbientLight {
-            color: Color::default(),
+            color: Color::WHITE,
             brightness: 0.75,
         })
         //.add_plugins(DebugPlugin)
@@ -41,5 +41,5 @@ fn main() {
         .add_plugins(DespawnPlugin)
         .add_plugins(SchedulePlugin)
         .add_plugins(StatePlugin)
-        .run()
+        .run();
 }

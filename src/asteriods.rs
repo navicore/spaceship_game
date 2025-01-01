@@ -6,7 +6,7 @@ use rand::prelude::*;
 use crate::asset_loader::SceneAssets;
 use crate::collision_detection::{Collider, CollisionDamage};
 use crate::health::Health;
-use crate::movement::{Acceleration, MovingObjectBundle, Velocity};
+use crate::movement::{Acceleration, Velocity};
 use crate::schedule::InGameSet;
 
 const SPAWN_RANGE_X: Range<f32> = -25.0..25.0;
@@ -66,16 +66,12 @@ fn spawn_asteroid(
     let acceleration = random_unit_vector() * ACCERATION_SCALAR;
 
     commands.spawn((
-        MovingObjectBundle {
-            velocity: Velocity::new(velocity),
-            acceleration: Acceleration::new(acceleration),
-            collider: Collider::new(RADIUS),
-            model: SceneBundle {
-                scene: scene_assets.asteroid.clone(),
-                transform: Transform::from_translation(translation),
-                ..default()
-            },
-        },
+        SceneRoot(scene_assets.asteroid.clone()),
+        Transform::from_translation(translation),
+        GlobalTransform::default(),
+        Velocity::new(velocity),
+        Acceleration::new(acceleration),
+        Collider::new(RADIUS),
         Asteroid,
         Health::new(HEALTH),
         CollisionDamage::new(COLLISION_DAMAGE),
@@ -83,7 +79,7 @@ fn spawn_asteroid(
 }
 
 fn rotate_asteroids(mut query: Query<&mut Transform, With<Asteroid>>, time: Res<Time>) {
-    for mut transform in query.iter_mut() {
-        transform.rotate_local_z(ROTATE_SPEED * time.delta_seconds());
+    for mut transform in &mut query {
+        transform.rotate_local_z(ROTATE_SPEED * time.delta_secs());
     }
 }

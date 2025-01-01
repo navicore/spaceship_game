@@ -4,7 +4,7 @@ use crate::{
     asteriods::Asteroid,
     health::Health,
     schedule::InGameSet,
-    spaceship::{Spaceship, SpaceshipMissile},
+    spaceship::{Missile, Spaceship},
 };
 
 #[derive(Component, Debug)]
@@ -14,7 +14,7 @@ pub struct Collider {
 }
 
 impl Collider {
-    pub fn new(radius: f32) -> Self {
+    pub const fn new(radius: f32) -> Self {
         Self {
             radius,
             colliding_entities: Vec::new(),
@@ -27,7 +27,7 @@ pub struct CollisionDamage {
     pub amount: f32,
 }
 impl CollisionDamage {
-    pub fn new(amount: f32) -> Self {
+    pub const fn new(amount: f32) -> Self {
         Self { amount }
     }
 }
@@ -38,7 +38,7 @@ pub struct CollisionEvent {
     pub collided_entity: Entity,
 }
 impl CollisionEvent {
-    pub fn new(entity: Entity, collided_entity: Entity) -> Self {
+    pub const fn new(entity: Entity, collided_entity: Entity) -> Self {
         Self {
             entity,
             collided_entity,
@@ -61,7 +61,7 @@ impl Plugin for CollisionDetectionPlugin {
                 (
                     handle_collisions::<Asteroid>,
                     handle_collisions::<Spaceship>,
-                    handle_collisions::<SpaceshipMissile>,
+                    handle_collisions::<Missile>,
                 ),
                 apply_collision_damage,
             )
@@ -89,7 +89,7 @@ fn collision_detection(mut query: Query<(Entity, &GlobalTransform, &mut Collider
         }
     }
 
-    for (entity, _, mut collider) in query.iter_mut() {
+    for (entity, _, mut collider) in &mut query {
         collider.colliding_entities.clear();
         if let Some(collisions) = colliding_entities.get(&entity) {
             collider
@@ -104,7 +104,7 @@ fn handle_collisions<T: Component>(
     query: Query<(Entity, &Collider), With<T>>,
 ) {
     for (entity, collider) in query.iter() {
-        for &collided_entity in collider.colliding_entities.iter() {
+        for &collided_entity in &collider.colliding_entities {
             if query.get(collided_entity).is_ok() {
                 continue;
             }

@@ -8,7 +8,7 @@ pub struct Velocity {
 }
 
 impl Velocity {
-    pub fn new(value: Vec3) -> Self {
+    pub const fn new(value: Vec3) -> Self {
         Self { value }
     }
 }
@@ -19,7 +19,7 @@ pub struct Acceleration {
 }
 
 impl Acceleration {
-    pub fn new(value: Vec3) -> Self {
+    pub const fn new(value: Vec3) -> Self {
         Self { value }
     }
 }
@@ -29,7 +29,7 @@ pub struct MovingObjectBundle {
     pub velocity: Velocity,
     pub acceleration: Acceleration,
     pub collider: Collider,
-    pub model: SceneBundle,
+    pub model: SceneRoot,
 }
 
 pub struct MovementPlugin;
@@ -45,13 +45,13 @@ impl Plugin for MovementPlugin {
 }
 
 fn update_velocity(mut query: Query<(&Acceleration, &mut Velocity)>, time: Res<Time>) {
-    for (acceleration, mut velocity) in query.iter_mut() {
-        velocity.value += acceleration.value * time.delta_seconds();
+    for (acceleration, mut velocity) in &mut query {
+        velocity.value += acceleration.value * time.delta_secs();
     }
 }
 
 fn update_position(mut query: Query<(&Velocity, &mut Transform)>, time: Res<Time>) {
-    for (velocity, mut transform) in query.iter_mut() {
-        transform.translation += velocity.value * time.delta_seconds();
+    for (velocity, mut transform) in &mut query {
+        transform.translation += velocity.value * time.delta_secs();
     }
 }
