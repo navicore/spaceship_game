@@ -11,4 +11,5 @@ opt.level = 3
 
 [dependencies]
 bevy = { version = "0.12" }
+rand = "0.8.5"
 
