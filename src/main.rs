@@ -5,6 +5,7 @@ mod collision_detection;
 mod debug;
 mod despawn;
 mod health;
+mod lighting;
 mod movement;
 mod schedule;
 mod spaceship;
@@ -15,6 +16,7 @@ use asteriods::AsteroidPlugin;
 use bevy::prelude::*;
 use camera::CameraPlugin;
 use collision_detection::CollisionDetectionPlugin;
+use lighting::LightingPlugin;
 //use debug::DebugPlugin;
 use despawn::DespawnPlugin;
 use movement::MovementPlugin;
@@ -24,15 +26,12 @@ use state::StatePlugin;
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::rgb(0.1, 0.0, 0.15)))
-        .insert_resource(AmbientLight {
-            color: Color::default(),
-            brightness: 0.75,
-        })
+        .insert_resource(ClearColor(Color::srgb(0.1, 0.0, 0.15)))
         //.add_plugins(DebugPlugin)
         .add_plugins(DefaultPlugins)
         // app plugins
         .add_plugins(AssetLoaderPlugin)
+        .add_plugins(LightingPlugin)
         .add_plugins(SpaceshipPlugin)
         .add_plugins(AsteroidPlugin)
         .add_plugins(MovementPlugin)
@@ -41,5 +40,5 @@ fn main() {
         .add_plugins(DespawnPlugin)
         .add_plugins(SchedulePlugin)
         .add_plugins(StatePlugin)
-        .run()
+        .run();
 }

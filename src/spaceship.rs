@@ -3,7 +3,7 @@ use bevy::prelude::*;
 use crate::asset_loader::SceneAssets;
 use crate::collision_detection::{Collider, CollisionDamage};
 use crate::health::Health;
-use crate::movement::{Acceleration, MovingObjectBundle, Velocity};
+use crate::movement::{Acceleration, Velocity};
 use crate::schedule::InGameSet;
 use crate::state::GameState;
 
@@ -24,10 +24,10 @@ const MISSILE_COLLISION_DAMAGE: f32 = 5.0;
 pub struct Spaceship;
 
 #[derive(Component, Debug)]
-pub struct SpaceshipMissile;
+pub struct Missile;
 
 #[derive(Component, Debug)]
-pub struct SpaceshipShield;
+pub struct Shield;
 
 pub struct SpaceshipPlugin;
 
@@ -51,25 +51,39 @@ impl Plugin for SpaceshipPlugin {
 
 fn spawn_spaceship(mut commands: Commands, scene_assets: Res<SceneAssets>) {
     commands.spawn((
-        MovingObjectBundle {
-            velocity: Velocity::new(Vec3::ZERO),
-            acceleration: Acceleration::new(Vec3::ZERO),
-            collider: Collider::new(SPACESHIP_RADIUS),
-            model: SceneBundle {
-                scene: scene_assets.spaceship.clone(),
-                transform: Transform::from_translation(STARTING_TRANSLATION),
-                ..Default::default()
-            },
-        },
+        SceneRoot(scene_assets.spaceship.clone()),
+        Transform::from_translation(STARTING_TRANSLATION),
+        GlobalTransform::default(),
+        Velocity::new(Vec3::ZERO),
+        Acceleration::new(Vec3::ZERO),
+        Collider::new(SPACESHIP_RADIUS),
         Spaceship,
         Health::new(SPACESHIP_HEALTH),
         CollisionDamage::new(SPACESHIP_COLLISION_DAMAGE),
     ));
 }
 
+// fn spawn_spaceship(mut commands: Commands, scene_assets: Res<SceneAssets>) {
+//     commands.spawn((
+//         MovingObjectBundle {
+//             velocity: Velocity::new(Vec3::ZERO),
+//             acceleration: Acceleration::new(Vec3::ZERO),
+//             collider: Collider::new(SPACESHIP_RADIUS),
+//             model: SceneBundle {
+//                 scene: scene_assets.spaceship.clone(),
+//                 transform: Transform::from_translation(STARTING_TRANSLATION),
+//                 ..Default::default()
+//             },
+//         },
+//         Spaceship,
+//         Health::new(SPACESHIP_HEALTH),
+//         CollisionDamage::new(SPACESHIP_COLLISION_DAMAGE),
+//     ));
+// }
+
 fn spaceship_movement_controls(
     mut query: Query<(&mut Transform, &mut Velocity), With<Spaceship>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     time: Res<Time>,
 ) {
     let Ok((mut transform, mut velocity)) = query.get_single_mut() else {
@@ -79,22 +93,22 @@ fn spaceship_movement_controls(
     let mut roll = 0.0;
     let mut movement = 0.0;
 
-    if keyboard_input.pressed(KeyCode::D) {
-        rotation = -SPACESHIP_ROTATION_SPEED * time.delta_seconds();
-    } else if keyboard_input.pressed(KeyCode::A) {
-        rotation = SPACESHIP_ROTATION_SPEED * time.delta_seconds();
+    if keyboard_input.pressed(KeyCode::KeyD) {
+        rotation = -SPACESHIP_ROTATION_SPEED * time.delta_secs();
+    } else if keyboard_input.pressed(KeyCode::KeyA) {
+        rotation = SPACESHIP_ROTATION_SPEED * time.delta_secs();
     }
 
-    if keyboard_input.pressed(KeyCode::S) {
+    if keyboard_input.pressed(KeyCode::KeyS) {
         movement = -SPACESHIP_SPEED;
-    } else if keyboard_input.pressed(KeyCode::W) {
+    } else if keyboard_input.pressed(KeyCode::KeyW) {
         movement = SPACESHIP_SPEED;
     }
 
     if keyboard_input.pressed(KeyCode::ShiftLeft) {
-        roll = SPACESHIP_ROLL_SPEED * time.delta_seconds();
+        roll = SPACESHIP_ROLL_SPEED * time.delta_secs();
     } else if keyboard_input.pressed(KeyCode::ControlLeft) {
-        roll = -SPACESHIP_ROLL_SPEED * time.delta_seconds();
+        roll = -SPACESHIP_ROLL_SPEED * time.delta_secs();
     }
 
     transform.rotate_y(rotation);
@@ -104,10 +118,39 @@ fn spaceship_movement_controls(
     velocity.value = -transform.forward() * movement;
 }
 
+// fn spaceship_weapon_controls(
+//     mut commands: Commands,
+//     query: Query<&Transform, With<Spaceship>>,
+//     keyboard_input: Res<ButtonInput<KeyCode>>,
+//     scene_assets: Res<SceneAssets>,
+// ) {
+//     let Ok(transform) = query.get_single() else {
+//         return;
+//     };
+//     if keyboard_input.pressed(KeyCode::Space) {
+//         commands.spawn((
+//             MovingObjectBundle {
+//                 velocity: Velocity::new(-transform.forward() * MISSILE_SPEED),
+//                 acceleration: Acceleration::new(Vec3::ZERO),
+//                 collider: Collider::new(MISSILE_RADIUS),
+//                 model: SceneBundle {
+//                     scene: scene_assets.missiles.clone(),
+//                     transform: Transform::from_translation(
+//                         transform.translation + -transform.forward() * MISSILE_FORWARD_SPAWN_SCALAR,
+//                     ),
+//                     ..default()
+//                 },
+//             },
+//             Missile,
+//             Health::new(MISSILE_HEALTH),
+//             CollisionDamage::new(MISSILE_COLLISION_DAMAGE),
+//         ));
+//     }
+// }
 fn spaceship_weapon_controls(
     mut commands: Commands,
     query: Query<&Transform, With<Spaceship>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
     scene_assets: Res<SceneAssets>,
 ) {
     let Ok(transform) = query.get_single() else {
@@ -115,19 +158,15 @@ fn spaceship_weapon_controls(
     };
     if keyboard_input.pressed(KeyCode::Space) {
         commands.spawn((
-            MovingObjectBundle {
-                velocity: Velocity::new(-transform.forward() * MISSILE_SPEED),
-                acceleration: Acceleration::new(Vec3::ZERO),
-                collider: Collider::new(MISSILE_RADIUS),
-                model: SceneBundle {
-                    scene: scene_assets.missiles.clone(),
-                    transform: Transform::from_translation(
-                        transform.translation + -transform.forward() * MISSILE_FORWARD_SPAWN_SCALAR,
-                    ),
-                    ..default()
-                },
-            },
-            SpaceshipMissile,
+            Velocity::new(-transform.forward() * MISSILE_SPEED),
+            Acceleration::new(Vec3::ZERO),
+            Collider::new(MISSILE_RADIUS),
+            SceneRoot(scene_assets.missiles.clone()),
+            Transform::from_translation(
+                transform.translation + -transform.forward() * MISSILE_FORWARD_SPAWN_SCALAR,
+            ),
+            GlobalTransform::default(),
+            Missile,
             Health::new(MISSILE_HEALTH),
             CollisionDamage::new(MISSILE_COLLISION_DAMAGE),
         ));
@@ -137,13 +176,13 @@ fn spaceship_weapon_controls(
 fn spaceship_shield_controls(
     mut commands: Commands,
     query: Query<Entity, With<Spaceship>>,
-    keyboard_input: Res<Input<KeyCode>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
 ) {
     let Ok(spaceship) = query.get_single() else {
         return;
     };
     if keyboard_input.pressed(KeyCode::Tab) {
-        commands.entity(spaceship).insert(SpaceshipShield);
+        commands.entity(spaceship).insert(Shield);
     }
 }
 
