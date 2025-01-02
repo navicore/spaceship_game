@@ -5,6 +5,7 @@ pub struct SceneAssets {
     pub asteroid: Handle<Scene>,
     pub spaceship: Handle<Scene>,
     pub missiles: Handle<Scene>,
+    pub material: Handle<StandardMaterial>,
 }
 
 pub struct AssetLoaderPlugin;
@@ -16,10 +17,20 @@ impl Plugin for AssetLoaderPlugin {
     }
 }
 
-fn load_assets(mut scene_assets: ResMut<SceneAssets>, asset_server: Res<AssetServer>) {
+fn load_assets(
+    mut scene_assets: ResMut<SceneAssets>,
+    asset_server: Res<AssetServer>,
+    mut materials: ResMut<Assets<StandardMaterial>>,
+) {
+    let material_handle = materials.add(StandardMaterial {
+        base_color: Color::srgb(1.0, 1.0, 1.0),
+        ..Default::default()
+    });
+
     *scene_assets = SceneAssets {
         asteroid: asset_server.load("Asteroid.glb#Scene0"),
         spaceship: asset_server.load("Spaceship.glb#Scene0"),
         missiles: asset_server.load("Missiles.glb#Scene0"),
+        material: material_handle,
     };
 }
