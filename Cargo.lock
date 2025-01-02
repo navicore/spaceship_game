@@ -525,6 +525,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "bevy_dylib"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d2b0c60e568493ac23c001d22f47b99818efe1e992253e2ab3fdb69603b2aa1c"
+dependencies = [
+ "bevy_internal",
+]
+
+[[package]]
 name = "bevy_ecs"
 version = "0.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3626,9 +3635,10 @@ dependencies = [
 
 [[package]]
 name = "spaceship_game"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "bevy",
+ "bevy_dylib",
  "rand",
 ]
 
