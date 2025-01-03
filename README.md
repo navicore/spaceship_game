@@ -9,6 +9,10 @@ cargo run --features bevy/dynamic_linking
 TODOs on my own:
 ===========
 
-* Re-implement collision detection with "bevy rapier" plugin (or other physics
-  engine plugin)
-* Terrain generation - maybe with gigs
+* [x] New Assets
+* [ ] Game Over
+* [ ] Re-implement collision detection with "bevy rapier" plugin (or other physics engine plugin)
+* [ ] Terrain
+* [ ] Terrain generation - maybe with gigs
+* [ ] Terrain from streaming domain observations
+
