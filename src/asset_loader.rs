@@ -28,8 +28,12 @@ fn load_assets(
     });
 
     *scene_assets = SceneAssets {
-        asteroid: asset_server.load("Asteroid.glb#Scene0"),
-        spaceship: asset_server.load("Spaceship.glb#Scene0"),
+        //asteroid: asset_server.load("Asteroid.glb#Scene0"),
+        asteroid: asset_server.load("Planet-18Uxrb2dIc.glb#Scene0"),
+        //spaceship: asset_server.load("Spaceship.glb#Scene0"),
+        spaceship: asset_server.load("Spaceship-Jqfed124pQ.glb#Scene0"),
+        //spaceship: asset_server.load("Spaceship-u105mYHLHU.glb#Scene0"),
+        //spaceship: asset_server.load("Spaceship-VSxUAFhzbA.glb#Scene0"),
         missiles: asset_server.load("Missiles.glb#Scene0"),
         material: material_handle,
     };
