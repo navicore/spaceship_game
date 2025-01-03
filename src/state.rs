@@ -6,6 +6,7 @@ pub enum GameState {
     InGame,
     Paused,
     GameOver,
+    GameRestart,
 }
 
 pub struct StatePlugin;
@@ -16,7 +17,7 @@ impl Plugin for StatePlugin {
             Update,
             (
                 game_state_input_events,
-                transition_to_in_game.run_if(in_state(GameState::GameOver)),
+                transition_to_game_restart.run_if(in_state(GameState::GameOver)),
             ),
         );
     }
@@ -32,10 +33,16 @@ pub fn game_state_input_events(
             GameState::InGame => next_state.set(GameState::Paused),
             GameState::Paused => next_state.set(GameState::InGame),
             GameState::GameOver => (),
+            GameState::GameRestart => (),
         }
     }
 }
 
-fn transition_to_in_game(mut next_state: ResMut<NextState<GameState>>) {
-    next_state.set(GameState::InGame);
+fn transition_to_game_restart(
+    mut next_state: ResMut<NextState<GameState>>,
+    keyboard_input: Res<ButtonInput<KeyCode>>,
+) {
+    if keyboard_input.just_pressed(KeyCode::Enter) {
+        next_state.set(GameState::GameRestart);
+    }
 }

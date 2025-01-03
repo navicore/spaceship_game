@@ -33,7 +33,7 @@ pub struct SpaceshipPlugin;
 
 impl Plugin for SpaceshipPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(GameState::GameOver), spawn_spaceship)
+        app.add_systems(OnEnter(GameState::GameRestart), spawn_spaceship)
             .add_systems(PostStartup, spawn_spaceship)
             .add_systems(
                 Update,
@@ -49,7 +49,11 @@ impl Plugin for SpaceshipPlugin {
     }
 }
 
-fn spawn_spaceship(mut commands: Commands, scene_assets: Res<SceneAssets>) {
+fn spawn_spaceship(
+    mut commands: Commands,
+    scene_assets: Res<SceneAssets>,
+    mut next_state: ResMut<NextState<GameState>>,
+) {
     commands.spawn((
         SceneRoot(scene_assets.spaceship.clone()),
         Transform::from_translation(STARTING_TRANSLATION),
@@ -61,25 +65,8 @@ fn spawn_spaceship(mut commands: Commands, scene_assets: Res<SceneAssets>) {
         Health::new(SPACESHIP_HEALTH),
         CollisionDamage::new(SPACESHIP_COLLISION_DAMAGE),
     ));
+    next_state.set(GameState::InGame);
 }
-
-// fn spawn_spaceship(mut commands: Commands, scene_assets: Res<SceneAssets>) {
-//     commands.spawn((
-//         MovingObjectBundle {
-//             velocity: Velocity::new(Vec3::ZERO),
-//             acceleration: Acceleration::new(Vec3::ZERO),
-//             collider: Collider::new(SPACESHIP_RADIUS),
-//             model: SceneBundle {
-//                 scene: scene_assets.spaceship.clone(),
-//                 transform: Transform::from_translation(STARTING_TRANSLATION),
-//                 ..Default::default()
-//             },
-//         },
-//         Spaceship,
-//         Health::new(SPACESHIP_HEALTH),
-//         CollisionDamage::new(SPACESHIP_COLLISION_DAMAGE),
-//     ));
-// }
 
 fn spaceship_movement_controls(
     mut query: Query<(&mut Transform, &mut Velocity), With<Spaceship>>,
@@ -118,35 +105,6 @@ fn spaceship_movement_controls(
     velocity.value = -transform.forward() * movement;
 }
 
-// fn spaceship_weapon_controls(
-//     mut commands: Commands,
-//     query: Query<&Transform, With<Spaceship>>,
-//     keyboard_input: Res<ButtonInput<KeyCode>>,
-//     scene_assets: Res<SceneAssets>,
-// ) {
-//     let Ok(transform) = query.get_single() else {
-//         return;
-//     };
-//     if keyboard_input.pressed(KeyCode::Space) {
-//         commands.spawn((
-//             MovingObjectBundle {
-//                 velocity: Velocity::new(-transform.forward() * MISSILE_SPEED),
-//                 acceleration: Acceleration::new(Vec3::ZERO),
-//                 collider: Collider::new(MISSILE_RADIUS),
-//                 model: SceneBundle {
-//                     scene: scene_assets.missiles.clone(),
-//                     transform: Transform::from_translation(
-//                         transform.translation + -transform.forward() * MISSILE_FORWARD_SPAWN_SCALAR,
-//                     ),
-//                     ..default()
-//                 },
-//             },
-//             Missile,
-//             Health::new(MISSILE_HEALTH),
-//             CollisionDamage::new(MISSILE_COLLISION_DAMAGE),
-//         ));
-//     }
-// }
 fn spaceship_weapon_controls(
     mut commands: Commands,
     query: Query<&Transform, With<Spaceship>>,
