@@ -1,7 +1,12 @@
 use bevy::{prelude::*, text::TextBounds};
 
+use crate::camera;
+
 #[derive(Debug, Component)]
 struct GameOverText;
+
+#[derive(Debug, Component)]
+struct GameOverCamera;
 
 #[derive(Debug, Clone, Copy, Default, Eq, PartialEq, Hash, States)]
 pub enum GameState {
@@ -16,15 +21,22 @@ pub struct StatePlugin;
 
 impl Plugin for StatePlugin {
     fn build(&self, app: &mut App) {
-        app.init_state::<GameState>().add_systems(
-            Update,
-            (
-                game_state_input_events,
-                transition_to_game_restart.run_if(in_state(GameState::GameOver)),
-                display_game_over_text.run_if(in_state(GameState::GameOver)),
-                remove_game_over_text.run_if(in_state(GameState::GameRestart)),
-            ),
-        );
+        app.init_state::<GameState>()
+            .add_systems(
+                Update,
+                (
+                    game_state_input_events,
+                    transition_to_game_restart.run_if(in_state(GameState::GameOver)),
+                    display_game_over_text.run_if(in_state(GameState::GameOver)),
+                    remove_game_over_text.run_if(in_state(GameState::GameRestart)),
+                    camera::spawn_camera.run_if(in_state(GameState::GameRestart)),
+                ),
+            )
+            .add_systems(
+                OnEnter(GameState::GameOver),
+                (camera::despawn_camera, spawn_game_over_camera).chain(),
+            )
+            .add_systems(OnEnter(GameState::GameRestart), camera::spawn_camera);
     }
 }
 
@@ -37,17 +49,18 @@ pub fn game_state_input_events(
         match state.get() {
             GameState::InGame => next_state.set(GameState::Paused),
             GameState::Paused => next_state.set(GameState::InGame),
-            GameState::GameOver => (),
-            GameState::GameRestart => (),
+            GameState::GameOver | GameState::GameRestart => (),
         }
+    } else if keyboard_input.just_pressed(KeyCode::KeyQ) {
+        // exit the game
+        std::process::exit(0);
     }
 }
 
-// TODO: this does not work
-// TODO: this does not work
-// TODO: this does not work
-// TODO: this does not work
-// TODO: this does not work
+fn spawn_game_over_camera(mut commands: Commands) {
+    commands.spawn((Camera2d, GameOverCamera));
+}
+
 fn display_game_over_text(mut commands: Commands, asset_server: Res<AssetServer>) {
     let font = asset_server.load("fonts/FiraSans-Bold.ttf");
     let box_size = Vec2::new(300.0, 200.0);
@@ -62,23 +75,34 @@ fn display_game_over_text(mut commands: Commands, asset_server: Res<AssetServer>
         .spawn((
             Sprite::from_color(Color::srgb(0.25, 0.25, 0.75), box_size),
             Transform::from_translation(box_position.extend(0.0)),
+            GameOverText,
         ))
         .with_children(|builder| {
             builder.spawn((
-                Text2d::new("Game Over - Press <Enter> to play again"),
+                //Text2d::new("Game Over - Press <Enter> to play again"),
+                Text2d::new("Game Over !"),
                 slightly_smaller_text_font.clone(),
                 TextLayout::new(JustifyText::Left, LineBreak::WordBoundary),
                 // Wrap text in the rectangle
                 TextBounds::from(box_size),
                 // ensure the text is drawn on top of the box
                 Transform::from_translation(Vec3::Z),
+                GameOverText,
             ));
         });
 }
 
-fn remove_game_over_text(mut commands: Commands, query: Query<Entity, With<GameOverText>>) {
+fn remove_game_over_text(
+    mut commands: Commands,
+    query: Query<Entity, With<GameOverText>>,
+    camera_query: Query<Entity, With<GameOverCamera>>,
+) {
     for entity in query.iter() {
         commands.entity(entity).despawn();
+    }
+    // Despawn the game over camera
+    for camera_entity in camera_query.iter() {
+        commands.entity(camera_entity).despawn();
     }
 }
 
