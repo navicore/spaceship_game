@@ -10,7 +10,7 @@ TODOs on my own:
 ===========
 
 * [x] New Assets
-* [ ] Game Over
+* [x] Game Over
 * [ ] Re-implement collision detection with "bevy rapier" plugin (or other
   physics engine plugin)
 * [ ] Re-implement collision handling so that things bounce off each other
