@@ -17,6 +17,7 @@ use bevy::prelude::*;
 #[cfg(debug_assertions)]
 use bevy::remote::{http::RemoteHttpPlugin, RemotePlugin};
 
+use bevy_embedded_assets::{EmbeddedAssetPlugin, PluginMode};
 use camera::CameraPlugin;
 use collision_detection::CollisionDetectionPlugin;
 use lighting::LightingPlugin;
@@ -32,6 +33,9 @@ fn main() {
 
     app.insert_resource(ClearColor(Color::srgb(0.1, 0.0, 0.15)))
         .add_plugins((
+            EmbeddedAssetPlugin {
+                mode: PluginMode::ReplaceDefault,
+            },
             DefaultPlugins,
             AssetLoaderPlugin,
             LightingPlugin,
