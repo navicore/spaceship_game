@@ -40,7 +40,12 @@ impl Plugin for StatePlugin {
             )
             .add_systems(
                 OnEnter(GameState::GameRestart),
-                (remove_game_over_text, camera::spawn_camera).chain(),
+                (
+                    remove_game_over_text,
+                    despawn_game_over_camera,
+                    camera::spawn_camera,
+                )
+                    .chain(),
             );
     }
 }
@@ -64,6 +69,12 @@ pub fn game_state_input_events(
 
 fn spawn_game_over_camera(mut commands: Commands) {
     commands.spawn((Camera2d, GameOverCamera));
+}
+
+fn despawn_game_over_camera(mut commands: Commands, query: Query<Entity, With<GameOverCamera>>) {
+    for camera_entity in query.iter() {
+        commands.entity(camera_entity).despawn();
+    }
 }
 
 fn display_game_over_text(mut commands: Commands, asset_server: Res<AssetServer>) {
@@ -97,17 +108,9 @@ fn display_game_over_text(mut commands: Commands, asset_server: Res<AssetServer>
         });
 }
 
-fn remove_game_over_text(
-    mut commands: Commands,
-    query: Query<Entity, With<GameOverText>>,
-    camera_query: Query<Entity, With<GameOverCamera>>,
-) {
+fn remove_game_over_text(mut commands: Commands, query: Query<Entity, With<GameOverText>>) {
     for entity in query.iter() {
         commands.entity(entity).despawn();
-    }
-    // Despawn the game over camera
-    for camera_entity in camera_query.iter() {
-        commands.entity(camera_entity).despawn();
     }
 }
 

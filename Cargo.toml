@@ -2,6 +2,7 @@
 name = "spaceship_game"
 version = "0.1.1"
 edition = "2021"
+build = "build.rs"
 
 [profile.dev]
 opt-level = 1
@@ -10,7 +11,7 @@ opt-level = 1
 opt-level = 3
 
 [dependencies]
-bevy = { version = "0.15" }
+bevy = { version = "0.15", features = ["bevy_remote"] }
 rand = "0.8.5"
 
 [dev-dependencies]

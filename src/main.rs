@@ -14,6 +14,9 @@ mod state;
 use asset_loader::AssetLoaderPlugin;
 use asteriods::AsteroidPlugin;
 use bevy::prelude::*;
+#[cfg(debug_assertions)]
+use bevy::remote::{http::RemoteHttpPlugin, RemotePlugin};
+
 use camera::CameraPlugin;
 use collision_detection::CollisionDetectionPlugin;
 use lighting::LightingPlugin;
@@ -25,20 +28,27 @@ use spaceship::SpaceshipPlugin;
 use state::StatePlugin;
 
 fn main() {
-    App::new()
-        .insert_resource(ClearColor(Color::srgb(0.1, 0.0, 0.15)))
-        //.add_plugins(DebugPlugin)
-        .add_plugins(DefaultPlugins)
-        // app plugins
-        .add_plugins(AssetLoaderPlugin)
-        .add_plugins(LightingPlugin)
-        .add_plugins(SpaceshipPlugin)
-        .add_plugins(AsteroidPlugin)
-        .add_plugins(MovementPlugin)
-        .add_plugins(CameraPlugin)
-        .add_plugins(CollisionDetectionPlugin)
-        .add_plugins(DespawnPlugin)
-        .add_plugins(SchedulePlugin)
-        .add_plugins(StatePlugin)
-        .run();
+    let mut app = App::new();
+
+    app.insert_resource(ClearColor(Color::srgb(0.1, 0.0, 0.15)))
+        .add_plugins((
+            DefaultPlugins,
+            AssetLoaderPlugin,
+            LightingPlugin,
+            SpaceshipPlugin,
+            AsteroidPlugin,
+            MovementPlugin,
+            CameraPlugin,
+            CollisionDetectionPlugin,
+            DespawnPlugin,
+            SchedulePlugin,
+            StatePlugin,
+        ));
+
+    #[cfg(debug_assertions)]
+    {
+        app.add_plugins((RemotePlugin::default(), RemoteHttpPlugin::default()));
+    }
+
+    app.run();
 }
