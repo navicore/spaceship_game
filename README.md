@@ -11,11 +11,11 @@ TODOs on my own:
 
 * [x] New Assets
 * [x] Game Over
-* [ ] Re-implement collision detection with "bevy rapier" plugin (or other
-  physics engine plugin)
-* [ ] Re-implement collision handling so that things bounce off each other
-  unless one is a missile
+* [ ] Remote Entity Inspector from nvim
+* [ ] Re-implement collision detection with avian physics
+* [ ] handle collisions so that things bounce off each other unless one is a missile
 * [ ] Terrain
 * [ ] Terrain generation - maybe with gigs
 * [ ] Terrain from streaming domain observations
+* [ ] Maps and doors/portals and breadcrumbs
 

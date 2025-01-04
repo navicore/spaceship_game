@@ -27,16 +27,21 @@ impl Plugin for StatePlugin {
                 (
                     game_state_input_events,
                     transition_to_game_restart.run_if(in_state(GameState::GameOver)),
-                    display_game_over_text.run_if(in_state(GameState::GameOver)),
-                    remove_game_over_text.run_if(in_state(GameState::GameRestart)),
-                    camera::spawn_camera.run_if(in_state(GameState::GameRestart)),
                 ),
             )
             .add_systems(
                 OnEnter(GameState::GameOver),
-                (camera::despawn_camera, spawn_game_over_camera).chain(),
+                (
+                    camera::despawn_camera,
+                    spawn_game_over_camera,
+                    display_game_over_text,
+                )
+                    .chain(),
             )
-            .add_systems(OnEnter(GameState::GameRestart), camera::spawn_camera);
+            .add_systems(
+                OnEnter(GameState::GameRestart),
+                (remove_game_over_text, camera::spawn_camera).chain(),
+            );
     }
 }
 
