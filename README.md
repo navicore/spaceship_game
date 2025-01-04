@@ -11,7 +11,8 @@ TODOs on my own:
 
 * [x] New Assets
 * [x] Game Over
-* [ ] Remote Entity Inspector from nvim
+* [x] Remote Entity Inspector from nvim
+* [x] Single file dist - embed assets
 * [ ] Re-implement collision detection with avian physics
 * [ ] handle collisions so that things bounce off each other unless one is a missile
 * [ ] Terrain
