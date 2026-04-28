@@ -1,3 +1,8 @@
+<!-- ghmig:moved -->
+> **This repository has moved to [https://git.navicore.tech/navicore/spaceship_game](https://git.navicore.tech/navicore/spaceship_game).**
+>
+> The GitHub copy is archived and no longer maintained.
+
 from tutorial https://www.youtube.com/watch?v=B6ZFuYYZCSY&t=738s
 
 orig code is https://github.com/marcelchampagne/bevy-basics
@@ -19,4 +24,3 @@ TODOs on my own:
 * [ ] Terrain generation - maybe with gigs
 * [ ] Terrain from streaming domain observations
 * [ ] Maps and doors/portals and breadcrumbs
-
